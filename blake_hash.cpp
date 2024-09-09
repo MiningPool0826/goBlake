@@ -13,33 +13,12 @@
 #define _ALIGN(x) __attribute__ ((aligned(x)))
 #endif
 
-void decred_hash(char *state, const char *input)
-{
-	#define MIDSTATE_LEN 128
-	sph_blake256_context ctx;
 
-	sph_blake256_context blake_mid;
-	bool ctx_midstate_done = false;
-	
-	uint8_t *ending = (uint8_t*) input;
-	ending += MIDSTATE_LEN;
-
-	if (!ctx_midstate_done) {
-		sph_blake256_init(&blake_mid);
-		sph_blake256(&blake_mid, input, MIDSTATE_LEN);
-		ctx_midstate_done = true;
-	}
-	memcpy(&ctx, &blake_mid, sizeof(blake_mid));
-
-	sph_blake256(&ctx, ending, (180 - MIDSTATE_LEN));
-	sph_blake256_close(&ctx, state);
-}
-
-void decred_hash_simple(char *state, const char *input)
+void decred_hash(char *state, const char *input, unsigned int len)
 {
 	sph_blake256_context ctx;
 	sph_blake256_init(&ctx);
-	sph_blake256(&ctx, input, 180);
+	sph_blake256(&ctx, input, len);
 	sph_blake256_close(&ctx, state);
 }
 
@@ -48,13 +27,13 @@ void decred_hash_simple(char *state, const char *input)
  * tpruvot@github 2015-2016
  */
 
-void sia_hash(char *output, const char *input)
+void sia_hash(char *output, const char *input, unsigned int len)
 {
 	uint8_t _ALIGN(A) hash[32];
 	blake2b_ctx ctx;
 
 	blake2b_init(&ctx, 32, NULL, 0);
-	blake2b_update(&ctx, input, 80);
+	blake2b_update(&ctx, input, len);
 	blake2b_final(&ctx, hash);
 
 	memcpy(output, hash, 32);
@@ -72,7 +51,7 @@ void sia_hash(char *output, const char *input)
 //	char *out1 = o1;
 //
 //
-//	decred_hash_simple(out1, in1);
+//	decred_hash(out1, in1, 180);
 //	for(int i = 0; i < 32; ++i)
 //		printf("%02x", (unsigned char)o1[i]);
 //	printf("\n");
@@ -81,7 +60,7 @@ void sia_hash(char *output, const char *input)
 //    char *out2 = o2;
 //
 //
-//    sia_hash(out2, in1);
+//    sia_hash(out2, in1, 80);
 //    for(int i = 0; i < 32; ++i)
 //        printf("%02x", (unsigned char)o2[i]);
 //    printf("\n");

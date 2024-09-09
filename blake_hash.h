@@ -5,9 +5,8 @@
 extern "C" {
 #endif
 
-void decred_hash(char *state, const char *input);
-void decred_hash_simple(char *state, const char *input);
-void sia_hash(char *output, const char *input);
+void decred_hash(char *state, const char *input, unsigned int len);
+void sia_hash(char *output, const char *input, unsigned int len);
 
 #ifdef __cplusplus
 }

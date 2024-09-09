@@ -13,11 +13,12 @@ func CalcDecredHash(bytesInput []byte) []byte {
 	// avoid of the situation of empty bytes array
 	bytesInput = append(bytesInput, byte(0x0))
 	input := (*C.char)(unsafe.Pointer(&bytesInput[0]))
+	inputLen := C.uint(len(bytesInput) - 1)
 
 	bytesOutput := make([]byte, 32)
 	output := (*C.char)(unsafe.Pointer(&bytesOutput[0]))
 
-	C.decred_hash_simple(output, input)
+	C.decred_hash(output, input, inputLen)
 
 	return bytesOutput
 }
@@ -31,11 +32,12 @@ func CalcSiaHash(bytesInput []byte) []byte {
 	// avoid of the situation of empty bytes array
 	bytesInput = append(bytesInput, byte(0x0))
 	input := (*C.char)(unsafe.Pointer(&bytesInput[0]))
+	inputLen := C.uint(len(bytesInput) - 1)
 
 	bytesOutput := make([]byte, 32)
 	output := (*C.char)(unsafe.Pointer(&bytesOutput[0]))
 
-	C.sia_hash(output, input)
+	C.sia_hash(output, input, inputLen)
 
 	return bytesOutput
 }
